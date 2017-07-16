@@ -1,6 +1,7 @@
 package com.vigolin.wegomusic.utils;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 /**
@@ -15,8 +16,8 @@ public class ScreenUtils {
     }
 
     public static int getSystemWidth(){
-        WindowManager mWindowManager=(WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
-        return mWindowManager.getDefaultDisplay().getWidth();
+        DisplayMetrics displayMetrics=mContext.getResources().getDisplayMetrics();
+        return displayMetrics.widthPixels;
     }
 
     //获取状态栏的高度
