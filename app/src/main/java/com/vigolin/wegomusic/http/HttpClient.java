@@ -10,6 +10,7 @@ import com.vigolin.wegomusic.module.OnlineMusic;
 import com.vigolin.wegomusic.module.SearchMusic;
 import com.vigolin.wegomusic.module.Splash;
 import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.BitmapCallback;
 import com.zhy.http.okhttp.callback.FileCallBack;
 
 import java.io.File;
@@ -140,7 +141,7 @@ public class HttpClient {
 
     public static void getBitmap(String url,final HttpCallback<Bitmap> callback){
         OkHttpUtils.get().url(url).build()
-                .execute(new JsonCallback<Bitmap>(Bitmap.class){
+                .execute(new BitmapCallback(){
                     @Override
                     public void onResponse(Bitmap response) {
                         callback.onSuccess(response);
