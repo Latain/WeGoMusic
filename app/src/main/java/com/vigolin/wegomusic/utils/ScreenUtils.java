@@ -15,7 +15,7 @@ public class ScreenUtils {
         mContext=context.getApplicationContext();
     }
 
-    public static int getSystemWidth(){
+    public static int getScreenWidth(){
         DisplayMetrics displayMetrics=mContext.getResources().getDisplayMetrics();
         return displayMetrics.widthPixels;
     }

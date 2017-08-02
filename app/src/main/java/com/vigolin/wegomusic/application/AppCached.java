@@ -55,8 +55,8 @@ public class AppCached {
         return getInstance().mPlayService;
     }
 
-    public void setPlayService(PlayService playService){
-        this.mPlayService=playService;
+    public static void setPlayService(PlayService playService){
+        getInstance().mPlayService=playService;
     }
 
     public static List<Music> getMusicList(){

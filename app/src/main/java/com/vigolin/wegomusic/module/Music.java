@@ -55,57 +55,57 @@ public class Music {
         private String fileName;
         private long fileSize;
 
-        private Builder setType(Type type){
+        public Builder setType(Type type){
             this.type=type;
             return this;
         }
 
-        private Builder setId(long id){
+        public Builder setId(long id){
             this.id=id;
             return this;
         }
 
-        private Builder setTitle(String title){
+        public Builder setTitle(String title){
             this.title=title;
             return this;
         }
 
-        private Builder setAlbum(String album){
+        public Builder setAlbum(String album){
             this.album=album;
             return this;
         }
 
-        private Builder setDuration(long duration){
+        public Builder setDuration(long duration){
             this.duration=duration;
             return this;
         }
 
-        private Builder setPath(String path){
+        public Builder setPath(String path){
             this.path=path;
             return this;
         }
 
-        private Builder setCoverPath(String coverPath){
+        public Builder setCoverPath(String coverPath){
             this.coverPath=coverPath;
             return this;
         }
 
-        private Builder setArtist(String artist){
+        public Builder setArtist(String artist){
             this.artist=artist;
             return this;
         }
 
-        private Builder setFileName(String fileName){
+        public Builder setFileName(String fileName){
             this.fileName=fileName;
             return this;
         }
 
-        private Builder setFileSize(long fileSize){
+        public Builder setFileSize(long fileSize){
             this.fileSize=fileSize;
             return this;
         }
 
-        private Music build(){
+        public Music build(){
             return new Music(this);
         }
     }
