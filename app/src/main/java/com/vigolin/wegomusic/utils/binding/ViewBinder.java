@@ -15,23 +15,22 @@ public class ViewBinder {
     }
 
     public static void bind(Object obj,View view){
-        Class<?> classObj=obj.getClass();
-        Field[] fields=classObj.getDeclaredFields();
+        Field[] fields=obj.getClass().getDeclaredFields();
         if(fields!=null && fields.length>0){
-            try{
-                for(Field field:fields){
-                    if(field.get(obj)!=null)
-                        continue;
-
+            for(Field field:fields){
+                try{
                     field.setAccessible(true);
+                    if(field.get(obj)!=null){
+                        continue;
+                    }
                     Bind bind=field.getAnnotation(Bind.class);
                     if(bind!=null){
                         int resId=bind.value();
                         field.set(obj,view.findViewById(resId));
                     }
+                }catch(IllegalAccessException e){
+                    e.printStackTrace();
                 }
-            }catch(IllegalAccessException e){
-                e.printStackTrace();
             }
         }
     }

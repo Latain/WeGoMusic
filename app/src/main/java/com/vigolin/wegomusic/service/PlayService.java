@@ -3,6 +3,7 @@ package com.vigolin.wegomusic.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -13,10 +14,13 @@ import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.vigolin.wegomusic.application.AppCached;
+import com.vigolin.wegomusic.application.Notifier;
 import com.vigolin.wegomusic.enums.PlayModeEnum;
 import com.vigolin.wegomusic.module.Music;
+import com.vigolin.wegomusic.receiver.NoisyAudioStreamReceiver;
 import com.vigolin.wegomusic.utils.MusicUtils;
 import com.vigolin.wegomusic.utils.PreferencesUtils;
+import com.vigolin.wegomusic.constants.Actions;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,19 +34,26 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     private OnPlayerEventListener mListener;
     private Handler mHandler=new Handler();
     private AudioManager audioManager;
+    private IntentFilter intentFilter=new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+    private NoisyAudioStreamReceiver mNoisyReceiver=new NoisyAudioStreamReceiver();
+    //当前播放的音乐
     private Music mPlayingMusic;
+    //当前播放音乐的位置
     private int mPlayingPosition;
     private boolean isPausing;
     private boolean isPreparing;
     private long quitTimerRemain;
+    private Notifier notifier;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG,"onCreate:"+getClass().getSimpleName());
+        AppCached.init(this);
         musicList= AppCached.getMusicList();
         audioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
         mPlayer.setOnCompletionListener(this);
+        notifier=Notifier.getInstance(this);
     }
 
 
@@ -62,7 +73,21 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
    @Override
    public int onStartCommand(Intent intent,int flags,int startId){
-       return super.onStartCommand(intent,flags,startId);
+       if(intent!=null && intent.getAction()!=null){
+           switch(intent.getAction()){
+               case Actions.ACTION_MEDIA_PLAY_PAUSE:
+                   playPause();
+                   break;
+               case Actions.ACTION_MEDIA_NEXT:
+                   next();
+                   break;
+               case Actions.ACTION_MEDIA_PREVIOUS:
+                   prev();
+                   break;
+               default:break;
+           }
+       }
+       return START_NOT_STICKY;
    }
 
     public void updateMusicList(){
@@ -90,13 +115,6 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         PreferencesUtils.saveCurrentSongId(musicList.get(mPlayingPosition).getId());
     }
 
-    private MediaPlayer.OnPreparedListener mPreparedListener=new MediaPlayer.OnPreparedListener(){
-        public void onPrepared(MediaPlayer mPlayer){
-            isPreparing=false;
-            start();
-        }
-    };
-
     public void playPause(){
         if(isPreparing)
             return;
@@ -122,6 +140,13 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         play(music);
     }
 
+    private MediaPlayer.OnPreparedListener mPreparedListener=new MediaPlayer.OnPreparedListener(){
+        public void onPrepared(MediaPlayer mPlayer){
+            isPreparing=false;
+            start();
+        }
+    };
+
     public void play(Music music){
         mPlayingMusic=music;
         try{
@@ -133,6 +158,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
 
             if(mListener!=null)
                 mListener.onChange(music);
+
+            notifier.showPlay(music);
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -145,7 +172,9 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mPlayer.start();
         isPausing=false;
         mHandler.post(mBackgroundRunnable);
+        notifier.showPlay(mPlayingMusic);
         audioManager.requestAudioFocus(this,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
+        registerReceiver(mNoisyReceiver,intentFilter);
     }
 
     /*
@@ -158,7 +187,9 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mPlayer.pause();
         isPausing=true;
         mHandler.removeCallbacks(mBackgroundRunnable);
+        notifier.showPause(mPlayingMusic);
         audioManager.abandonAudioFocus(this);
+        unregisterReceiver(mNoisyReceiver);
 
         if(mListener!=null)
             mListener.onPlayerPause();
@@ -187,7 +218,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         }
     }
 
-    private void stop(){
+    public void stop(){
         pause();
         stopQuitTimer();
         mPlayer.reset();
@@ -333,7 +364,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     }
 
     public class PlayServiceBinder extends Binder {
-        public PlayService getPlaySerive(){
+        public PlayService getPlayService(){
             return PlayService.this;
         }
     }

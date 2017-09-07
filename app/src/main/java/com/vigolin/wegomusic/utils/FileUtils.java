@@ -94,6 +94,21 @@ public class FileUtils {
         return getFileName(artist,title);
     }
 
+    public static String getMp3FileName(String artist,String title){
+        return getFileName(artist,title)+MP3;
+    }
+
+    public static String getArtistAndAlbum(String artist,String title){
+        if(TextUtils.isEmpty(artist) && TextUtils.isEmpty(title))
+            return "";
+        else if(!TextUtils.isEmpty(artist) && TextUtils.isEmpty(title))
+            return artist;
+        else if(TextUtils.isEmpty(artist) && !TextUtils.isEmpty(title))
+            return title;
+        else
+            return artist+"_"+title;
+    }
+
     private static String getFileName(String artist,String title){
         artist=stringFilter(artist);
         title=stringFilter(title);

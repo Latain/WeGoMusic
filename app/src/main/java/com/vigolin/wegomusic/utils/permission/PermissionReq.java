@@ -88,7 +88,7 @@ public class PermissionReq {
         return deniedPermissionList;
     }
 
-    public static void onRequstPermissionResult(int requestCode,int[] grantedCodes){
+    public static void onRequestPermissionResult(int requestCode,String[] permissions,int[] grantedCodes){
         PermissionResult pr=sResultArray.get(requestCode);
         if(pr==null)
             return;

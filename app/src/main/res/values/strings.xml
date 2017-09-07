@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">WeGoMusic</string>
+    <string name="copyright">Copyright © 2015&#045;%d SWUST</string>
+    <string name="no_permission">没有%1$s权限，无法%2$s！</string>
+    <string name="local_music">本地音乐</string>
+    <string name="online_music">在线音乐</string>
+    <string name="menu_settings">设置</string>
+    <string name="menu_night">夜间模式</string>
+    <string name="menu_timer">时间</string>
+    <string name="menu_exit">退出</string>
+    <string name="menu_about">关于</string>
 </resources>

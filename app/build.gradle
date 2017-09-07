@@ -29,5 +29,8 @@ dependencies {
     compile 'com.zhy:okhttputils:2.0.0'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'com.android.support:design:25.3.1'
+    compile 'me.wcy:lrcview:1.4.1'
+    compile 'com.tencent.bugly:crashreport_upgrade:1.2.5'
     testCompile 'junit:junit:4.12'
 }
